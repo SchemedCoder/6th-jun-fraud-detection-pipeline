@@ -33,8 +33,6 @@ DEVICES = [
 
 transactions = []
 
-print("Generating transactions...")
-
 for txn_id in range(1, NUM_TRANSACTIONS + 1):
 
     customer_id = random.randint(
@@ -56,4 +54,39 @@ for txn_id in range(1, NUM_TRANSACTIONS + 1):
     )
 
     event_time = fake.date_time_between(
-        start_date="-30
+        start_date="-30d",
+        end_date="now"
+    )
+
+    ingest_time = (
+        event_time +
+        timedelta(
+            seconds=random.randint(
+                0,
+                300
+            )
+        )
+    )
+
+    transactions.append(
+        {
+            "transaction_id": txn_id,
+            "customer_id": customer_id,
+            "amount": amount,
+            "country": country,
+            "device_type": device,
+            "event_time": event_time,
+            "ingest_time": ingest_time
+        }
+    )
+
+df = pd.DataFrame(transactions)
+
+df.to_csv(
+    "data/sample/transactions.csv",
+    index=False
+)
+
+print(
+    f"{len(df)} transactions generated"
+)
